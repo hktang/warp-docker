@@ -20,14 +20,14 @@ RUN case ${TARGETPLATFORM} in \
       "linux/arm64")   export ARCH="armv8" ;; \
       *) echo "Unsupported TARGETPLATFORM: ${TARGETPLATFORM}" && exit 1 ;; \
     esac && \
-    echo "Building for ${TARGETPLATFORM} with GOST ${GOST_VERSION}" &&\
-    apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y curl gnupg lsb-release sudo jq ipcalc && \
+    echo "Building for ${TARGETPLATFORM} with GOST ${GOST_VERSION}" && \
+    until apt-get update --fix-missing; do echo "Retrying apt-get update..."; sleep 5; done && \
+    until apt-get upgrade -y; do echo "Retrying apt-get upgrade..."; sleep 5; done && \
+    until apt-get install -y curl gnupg lsb-release sudo jq ipcalc --fix-missing; do echo "Retrying apt-get install dependencies..."; sleep 5; done && \
     curl https://pkg.cloudflareclient.com/pubkey.gpg | gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/cloudflare-client.list && \
-    apt-get update && \
-    apt-get install -y cloudflare-warp && \
+    until apt-get update --fix-missing; do echo "Retrying apt-get update..."; sleep 5; done && \
+    until apt-get install -y cloudflare-warp --fix-missing; do echo "Retrying apt-get install cloudflare-warp..."; sleep 5; done && \
     apt-get clean && \
     apt-get autoremove -y && \
     MAJOR_VERSION=$(echo ${GOST_VERSION} | cut -d. -f1) && \
