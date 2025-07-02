@@ -27,7 +27,7 @@ RUN case ${TARGETPLATFORM} in \
     curl https://pkg.cloudflareclient.com/pubkey.gpg | gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/cloudflare-client.list && \
     until apt-get update --fix-missing; do echo "Retrying apt-get update..."; sleep 5; done && \
-    until apt-get install -y cloudflare-warp --fix-missing; do echo "Retrying apt-get install cloudflare-warp..."; sleep 5; done && \
+    until apt-get install -y cloudflare-warp libdbus-1-3 iproute2 nftables gnupg2 desktop-file-utils libcap2-bin libnss3-tools libpcap0.8 --fix-missing || apt-get install -f -y; do echo "Retrying apt-get install cloudflare-warp and dependencies..."; sleep 5; done && \
     apt-get clean && \
     apt-get autoremove -y && \
     MAJOR_VERSION=$(echo ${GOST_VERSION} | cut -d. -f1) && \
